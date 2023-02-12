@@ -1,0 +1,15 @@
+name: xmonad-my-lib
+version: "0.1.0.0"
+synopsis: My XMonad config
+description: See README at <https://github.com/stjandra/xmonad#readme>
+github: stjandra/xmonad
+license: MIT
+author: stjandra
+maintainer: stjandra
+
+dependencies:
+    - base >= 4.11 && < 5
+    - xmonad-contrib
+
+library:
+    source-dirs: lib
