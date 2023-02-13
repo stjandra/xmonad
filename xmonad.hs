@@ -231,23 +231,24 @@ myXmobarPP =
     { ppCurrent = xmobarColor myColorPpCurrent "" . wrap "[" "]", -- Current workspace.
       ppVisible = xmobarColor myColorPpVisible "", -- Visible, but not current workspace.
       ppHidden = xmobarColor myColorPpHidden "", -- Hidden workspaces.
-      -- ppHiddenNoWindows = xmobarColor myColorPpHidden "",       -- Hidden workspaces with no windows.
       ppUrgent = xmobarColor myColorPpUrgent "" . wrap "!" "!",
-      -- ppTitle = xmobarColor myColorPpTitleFocus "" . shorten 30,  -- Title of active window.
       ppSep = " | ", -- Separator.
-      ppLayout = myLayoutString,
+      ppLayout = myPpLayout,
       ppExtras = [myExtras],
       ppOrder = \(ws : l : _ : ex) -> [ws, l] ++ ex -- ws: workspaces, l: layout, t: title, ex: extra
     }
 
-myLayoutString :: String -> String
-myLayoutString layout = case layout of
-  "Tall" -> printf "<fc=%s><fn=1>\xf58e</fn></fc>" myColorLayout
-  "Mirror Tall" -> printf "<fc=%s><fn=1>\xf7a4</fn></fc>" myColorLayout
-  "TwoPane" -> printf "<fc=%s><fn=1>\xf7a5</fn></fc>" myColorLayout
-  "Tabbed Simplest" -> printf "<fc=%s><fn=1>\xf24d</fn></fc>" myColorLayout
-  "Full" -> printf "<fc=%s><fn=1>\xf0c8</fn></fc>" myColorLayout
+myPpLayout :: String -> String
+myPpLayout layout = case layout of
+  "Tall" -> myLayoutString "\xf58e"
+  "Mirror Tall" -> myLayoutString "\xf7a4"
+  "TwoPane" -> myLayoutString "\xf7a5"
+  "Tabbed Simplest" -> myLayoutString "\xf24d"
+  "Full" -> myLayoutString "\xf0c8"
   u -> printf "Unhandled layout %s" u
+
+myLayoutString :: String -> String
+myLayoutString string = xmobarColor myColorLayout "" $ printf "<fn=1>%s</fn>" string
 
 -- Tabbed layout: show only focused window title
 -- Other layouts: show all window titles
@@ -281,7 +282,7 @@ myLogTitles ppFocus ppNotFocus =
 
 -- Separator for window titles.
 myTitleSep :: String
-myTitleSep = printf " <fc=%s>|</fc> " myColorTitleSep
+myTitleSep = xmobarColor myColorTitleSep "" " | "
 
 ------------------
 -- Startup Hook --
