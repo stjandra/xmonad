@@ -72,46 +72,20 @@ myModMask = mod4Mask
 myWorkspaces :: [String]
 myWorkspaces = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
 
-myTheme :: Theme
-myTheme = theme nordTheme
+-- The following line could be changed by ~/git/scripts-public/change_theme
+-- Please be careful when changing
+myTheme :: MyTheme
+myTheme = macchiatoTheme
 
--- Border colors for unfocused and focused windows.
-myNormalBorderColor :: String
-myFocusedBorderColor :: String
-myNormalBorderColor = inactiveBorderColor myTheme
+myBorderTheme :: BorderTheme
+myBorderTheme = borderTheme myTheme
 
-myFocusedBorderColor = activeColor myTheme
-
-myColorPpCurrent :: String
-myColorPpVisible :: String
-myColorPpTitleFocus :: String
-myColorLayout :: String
-myColorPpUrgent :: String
-myColorPpHidden :: String
-myColorPpTitleNotFocus :: String
-myColorTitleSep :: String
-myColorPpCurrent = activeColor myTheme
-
-myColorPpVisible = activeColor myTheme
-
-myColorPpTitleFocus = activeColor myTheme
-
-myColorLayout = activeColor myTheme
-
-myColorPpUrgent = urgentColor myTheme
-
-myColorPpHidden = inactiveTextColor myTheme
-
-myColorPpTitleNotFocus = inactiveTextColor myTheme
-
-myColorTitleSep = inactiveTextColor myTheme
-
-myColorDmenu :: String
-myColorDmenu = inactiveColor myTheme
+myXmobarTheme :: XmobarTheme
+myXmobarTheme = xmobarTheme myTheme
 
 -- dmenu args.
 myDmenuArgs :: String
-myDmenuArgs = printf "-i -sb '%s'" myColorDmenu
+myDmenuArgs = printf "-i -sb '%s'" $ dmenuColor myTheme
 
 -- .desktop files with dmenu.
 myDmenuDesktop :: String
@@ -167,7 +141,7 @@ myLayout = tiled ||| twoPane ||| myTabbed ||| Full
 -- Theme for tabbed layout.
 myTabConfig :: Theme
 myTabConfig =
-  myTheme
+  (theme myTheme)
     { fontName = "xft:Fira Code:weight=bold:pixelsize=13:antialias=true:hinting=true",
       decoHeight = 20
     }
@@ -228,10 +202,10 @@ myLogHook = return ()
 myXmobarPP :: PP
 myXmobarPP =
   def
-    { ppCurrent = xmobarColor myColorPpCurrent "" . wrap "[" "]", -- Current workspace.
-      ppVisible = xmobarColor myColorPpVisible "", -- Visible, but not current workspace.
-      ppHidden = xmobarColor myColorPpHidden "", -- Hidden workspaces.
-      ppUrgent = xmobarColor myColorPpUrgent "" . wrap "!" "!",
+    { ppCurrent = xmobarColor (myPpCurrentColor myXmobarTheme) "" . wrap "[" "]", -- Current workspace.
+      ppVisible = xmobarColor (myPpVisibleColor myXmobarTheme) "", -- Visible, but not current workspace.
+      ppHidden = xmobarColor (myPpHiddenColor myXmobarTheme) "", -- Hidden workspaces.
+      ppUrgent = xmobarColor (myPpUrgentColor myXmobarTheme) "" . wrap "!" "!",
       ppSep = " | ", -- Separator.
       ppLayout = myPpLayout,
       ppExtras = [myExtras],
@@ -248,7 +222,7 @@ myPpLayout layout = case layout of
   u -> printf "Unhandled layout %s" u
 
 myLayoutString :: String -> String
-myLayoutString string = xmobarColor myColorLayout "" $ printf "<fn=1>%s</fn>" string
+myLayoutString string = xmobarColor (myPpLayoutColor myXmobarTheme) "" $ printf "<fn=1>%s</fn>" string
 
 -- Tabbed layout: show only focused window title
 -- Other layouts: show all window titles
@@ -257,8 +231,8 @@ myExtras =
   do
     layout <- myCurLayout
     case layout of
-      "Tabbed Simplest" -> onLogger (xmobarColor myColorPpTitleFocus "") logTitle
-      _ -> myLogTitles (xmobarColor myColorPpTitleFocus "") (xmobarColor myColorPpTitleNotFocus "")
+      "Tabbed Simplest" -> onLogger (xmobarColor (myPpTitleFocusColor myXmobarTheme) "") logTitle
+      _ -> myLogTitles (xmobarColor (myPpTitleFocusColor myXmobarTheme) "") (xmobarColor (myPpTitleNotFocusColor myXmobarTheme) "")
 
 -- Adapted from
 -- https://hackage.haskell.org/package/xmonad-contrib-0.16/docs/src/XMonad.Util.Loggers.html#logLayout
@@ -282,7 +256,7 @@ myLogTitles ppFocus ppNotFocus =
 
 -- Separator for window titles.
 myTitleSep :: String
-myTitleSep = xmobarColor myColorTitleSep "" " | "
+myTitleSep = xmobarColor (myPpSepColor myXmobarTheme) "" " | "
 
 ------------------
 -- Startup Hook --
@@ -299,7 +273,7 @@ myStartupHook = do
   spawnOnce "kitty --single-instance $HOME/git/scripts-public/start_emacs"
   spawnOnce "nm-applet"
   spawnOnce "dropbox start"
-  spawn "$HOME/.config/xmonad/trayer.sh"
+  spawn $ "$HOME/.config/xmonad/trayer.sh" ++ " " ++ wrap "\"" "\"" (trayerBg myTheme)
 
   -- Fix for Java Swing apps.
   -- https://bbs.archlinux.org/viewtopic.php?id=95437
@@ -327,8 +301,8 @@ myConfig =
       borderWidth = myBorderWidth,
       modMask = myModMask,
       workspaces = myWorkspaces,
-      normalBorderColor = myNormalBorderColor,
-      focusedBorderColor = myFocusedBorderColor,
+      normalBorderColor = myNormalBorderColor myBorderTheme,
+      focusedBorderColor = myFocusedBorderColor myBorderTheme,
       -- key bindings
       keys = myKeys,
       mouseBindings = myMouseBindings,
