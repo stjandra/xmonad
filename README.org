@@ -1,0 +1,43 @@
+#+TITLE: XMonad
+
+* About The Project
+
+My [[https://github.com/xmonad/xmonad][XMonad]] configuration.
+
+* Getting Started
+
+There are many ways to install XMonad. The following instruction builds from source using stack.
+
+See XMonad install documentation [[https://github.com/xmonad/xmonad/blob/master/INSTALL.md][here]] for more information.
+
+** Prerequisites
+
+Arch:
+#+begin_src sh
+sudo pacman -S git xorg-server xorg-apps xorg-xinit xorg-xmessage libx11 libxft libxinerama libxrandr libxss pkgconf
+sudo pacman -S stack
+#+end_src
+
+** Installation
+
+Clone the repo:
+#+begin_src sh
+git clone git@github.com:stjandra/xmonad.git
+#+end_src
+
+Go to the repo:
+#+begin_src sh
+cd xmonad
+#+end_src
+
+Install with stack:
+#+begin_src sh
+stack install
+#+end_src
+
+This creates =xmonad= executable in =~/.local/bin= (from =xmonad-git/Main.hs=).
+
+This is optional, but running the following will compile my =xmonad.hs=. And =lib/= is included in the GHC include path.
+#+begin_src sh
+xmonad --recompile
+#+end_src
